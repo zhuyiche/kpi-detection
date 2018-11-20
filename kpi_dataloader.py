@@ -93,7 +93,6 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
                         test_datasets_list=self.total_test_datasets,
                         test_event_labels_list=self.total_test_event_labels)
 
-
             self.total_train_datasets = np.array(self.total_train_datasets)
             self.total_valid_datasets = np.array(self.total_valid_datasets)
             self.total_train_event_labels = np.array(self.total_train_event_labels)

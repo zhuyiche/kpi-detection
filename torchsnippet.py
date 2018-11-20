@@ -13,9 +13,10 @@ class NNprepare(object):
     """
     This class contains necessary method to build model.
     """
-    def __init__(self, main_path=None, save_file_name=None):
+    def __init__(self, main_path=None, save_file_name=None, custom_NN=None):
         self.main_path = main_path
         self.save_file_name = save_file_name
+        self.custom_NN = custom_NN
 
     def _create_save_file_name(self):
         """
@@ -68,17 +69,32 @@ class NNprepare(object):
                      target_reshape=None,
                      print_metric_name=None,
                      model=None, **kwargs):
-        return NN(train_loader=train_loader, val_loader=val_loader,
-                  test_loader=test_loader,
-                  if_checkpoint_save=if_checkpoint_save,
-                  print_result_epoch=print_result_epoch,
-                  target_reshape=target_reshape,
-                  print_metric_name=print_metric_name,
-                  metrics=self._metrics,
-                  create_save_file_name=self._create_save_file_name,
-                  score_function=self._score_function,
-                  main_path = self.main_path,
-                  model=model, **kwargs)
+        if self.custom_NN is None:
+            return NN(train_loader=train_loader, val_loader=val_loader,
+                      test_loader=test_loader,
+                      if_checkpoint_save=if_checkpoint_save,
+                      print_result_epoch=print_result_epoch,
+                      target_reshape=target_reshape,
+                      print_metric_name=print_metric_name,
+                      metrics=self._metrics,
+                      create_save_file_name=self._create_save_file_name,
+                      score_function=self._score_function,
+                      main_path = self.main_path,
+                      model=model, **kwargs)
+        else:
+            return self.custom_NN(
+                    train_loader=train_loader, val_loader=val_loader,
+                    test_loader=test_loader,
+                    if_checkpoint_save=if_checkpoint_save,
+                    print_result_epoch=print_result_epoch,
+                    target_reshape=target_reshape,
+                    print_metric_name=print_metric_name,
+                    metrics=self._metrics,
+                    create_save_file_name=self._create_save_file_name,
+                    score_function=self._score_function,
+                    main_path=self.main_path,
+                    model=model, **kwargs)
+
 
 
 class NN(object):
@@ -295,6 +311,10 @@ class NN(object):
             else:
                 acc = self.metrics(output, target, scores)
 
+            # this is design particularly for sklear.metrics.roc_auc_score
+            # extreme value will occur when only one class presented in mini-batch
+            if acc == 0 or acc == 1:
+                acc = percent_acc.avg
 
             percent_acc.update(acc, data.size(0))
 

@@ -1,9 +1,6 @@
 import numpy as np
-import os
-import matplotlib.pyplot as plt
-import scipy as sp
+import os, argparse
 import pandas as pd
-import sklearn
 
 MAIN_PATH = os.getcwd()
 datapath = os.path.join(MAIN_PATH, 'data')
@@ -54,10 +51,15 @@ def boxplot(kpi_values, boxplot_size=None):
 
 
 if __name__ == '__main__':
-    example_file_path = os.path.join(train_path, '1c35dbf57f55f5e4_.csv')
-    example_file = pd.read_csv(example_file_path, index_col=0)
-    values = example_file['value']
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-boxplot_size", help="window size for running boxplot", type=int, default=-1)
+    parser.add_argument("--data_path", help="full data path for csv files, only one csv file are supported for now",
+                        type=str, default=os.path.join(train_path, '1c35dbf57f55f5e4_.csv'))
+    parser.add_argument("--value", help="column name for storing value", type=str, default='value')
+    parser.add_argument("--file_saver", help="file name to save result csv", type=str, default='example_boxplot.csv')
+    args = parser.parse_args()
+
+    example_file = pd.read_csv(args.data_path, index_col=0)
+    values = example_file[args.value]
     result = boxplot(values)
-    print(result)
-    print(type(result))
-    result.to_csv(os.path.join(MAIN_PATH, 'example_boxplot.csv'))
+    result.to_csv(os.path.join(MAIN_PATH, args.file_saver))
