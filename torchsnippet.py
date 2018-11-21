@@ -6,7 +6,7 @@ import torch.nn as nn
 import sklearn, threading
 from config import Configuration as cfg
 from logger import Logger
-
+import time
 
 
 class NNprepare(object):
@@ -196,6 +196,7 @@ class NN(object):
         best_test_acc = 0
 
         for epoch in range(self.epochs):
+            start_time = time.time()
             self.train_epoch()
             if not torch.cuda.is_available() and self.test_loader is not None:
                 self.multi_threading_val_test()
@@ -207,12 +208,13 @@ class NN(object):
             info = {'train_loss': self._train_loss.avg, 'train_{}'.format(self.print_metric_name): self._train_score.avg,
                     'val_loss': self._valid_loss.avg, 'val_{}'.format(self.print_metric_name): self._valid_score.avg}
 
-
+            end_time = time.time()
             if self.if_checkpoint_save and self.test_loader is None:
                 is_best = self._valid_score.avg > best_val_acc
                 if is_best:
                     self.set_best_valid_score(self._valid_score.avg)
                 print('>>>>>>>>>>>>>>>>>>>>>>')
+                print('epoch {} takes {} to train'.format(epoch, start_time - end_time))
                 print(
                     'Epoch: {} train loss: {}, train {}: {}, valid loss: {}, valid {}: {}'.format(epoch, self._train_loss.avg,
                                                                                                   self._train_score.avg,
@@ -384,10 +386,10 @@ class NN(object):
 
                 percent_acc.update(acc, data.size(0))
                 time_end = time.time() - time_now
-                if batch_idx % print_freq == 0 and self.print_result_epoch:
-                    print('Validation Round: {}, Time: {}'.format(batch_idx, np.round(time_end, 2)))
-                    print('Validation Loss: val:{} avg:{} {}: val:{} avg:{}'.format(losses.val, losses.avg, self.print_metric_name,
-                                                                                     percent_acc.val, percent_acc.avg))
+                #if batch_idx % print_freq == 0 and self.print_result_epoch:
+                print('Validation Round: {}, Time: {}'.format(batch_idx, np.round(time_end, 2)))
+                print('Validation Loss: val:{} avg:{} {}: val:{} avg:{}'.format(losses.val, losses.avg, self.print_metric_name,
+                                                                                 percent_acc.val, percent_acc.avg))
         self.set_valid_score(percent_acc)
         self.set_valid_loss(losses)
 
