@@ -55,7 +55,7 @@ class PrepareLSTMAutoEncoder(NNprepare):
         sq_loss = criterion(output, data)
         #print('sq_loss ', sq_loss)
         scores = torch.sum(sq_loss, dim=1)
-        print(scores)
+        #print(scores)
         loss = torch.mean(sq_loss)
 
         return output, scores, loss
