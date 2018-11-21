@@ -323,13 +323,13 @@ class NN(object):
             self._optimizer.step()
 
             time_end = time.time() - time_now
-            if batch_idx % print_freq == 0 and self.print_result_epoch:
-                print('Training Round: {}, Time: {}'.format(batch_idx,
-                                                        np.round(time_end, 2)))
-                print('Training Loss: val:{} avg:{} {}: val:{} avg:{}'.format(losses.val,
-                                                                          losses.avg,
-                                                                          self.print_metric_name,
-                                                                          percent_acc.val, percent_acc.avg))
+            #if batch_idx % print_freq == 0 and self.print_result_epoch:
+            print('Training Round: {}, Time: {}'.format(batch_idx,
+                                                    np.round(time_end, 2)))
+            print('Training Loss: val:{} avg:{} {}: val:{} avg:{}'.format(losses.val,
+                                                                      losses.avg,
+                                                                      self.print_metric_name,
+                                                                      percent_acc.val, percent_acc.avg))
         self.set_train_loss(losses)
         self.set_train_score(percent_acc)
 
