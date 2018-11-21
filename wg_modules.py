@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.nn.functional as F
-
+from torchsnippet import ExtendNNModule
 
 @torch.jit.script
 def fused_add_tanh_sigmoid_multiply(input_a, input_b, n_channels):
@@ -131,7 +131,7 @@ class WN(torch.nn.Module):
         return self.end(output)
 
 
-class WaveGlow(torch.nn.Module):
+class WaveGlow(ExtendNNModule):
     def __init__(self, n_mel_channels, n_flows, n_group, n_early_every,
                  n_early_size, WN_config):
         super(WaveGlow, self).__init__()

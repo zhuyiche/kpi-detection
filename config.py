@@ -24,6 +24,7 @@ class Configuration(object):
 
     #### network setting #######
     parser.add_argument("--bidirection", type=int, default=0)
+    #parser.add_argument("--model", type=str, default=)
 
     args = parser.parse_args()
 
