@@ -61,6 +61,6 @@ class LSTMAutoEncoder(ExtendNNModule):
 
     def forward(self, input):
         encoded_input = self.encoder(input)
-        print('self.encoder.shape ', encoded_input.shape)
+        #print('self.encoder.shape ', encoded_input.shape)
         decoded_output = self.decoder(encoded_input)
         return decoded_output
