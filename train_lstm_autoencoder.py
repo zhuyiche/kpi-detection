@@ -76,7 +76,8 @@ def main():
         prepare_lstm_ae_net.train()
     else:
         waveglow_logger_path = os.path.join(MAIN_PATH, 'log', 'waveglow')
-        waveglow_model = WaveGlow()
+        waveglow_model = 1
+        #waveglow_model = WaveGlow()
         if torch.cuda.is_available():
             print('Pretrain model is running on GPU')
             waveglow_model = waveglow_model.cuda()
