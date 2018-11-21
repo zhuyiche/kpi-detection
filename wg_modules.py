@@ -59,7 +59,7 @@ class Invertible1x1Conv(torch.nn.Module):
 class WN(torch.nn.Module):
     """
     This is the WaveNet like layer for the affine coupling.  The primary difference
-    from WaveNet is the convolutions need not be causal.  There is also no dilation
+    from WaveNet is the convolutions need not to be causal.  There is also no dilation
     size reset.  The dilation only doubles on each layer
     """
     def __init__(self, n_in_channels, n_mel_channels, n_layers, n_channels,
@@ -165,9 +165,10 @@ class WaveGlow(ExtendNNModule):
         forward_input[0] = mel_spectrogram:  batch x n_mel_channels x frames
         forward_input[1] = audio: batch x time
         """
-        spect, audio = forward_input
-
+        #spect, audio = forward_input
+        audio = forward_input
         #  Upsample spectrogram to size of audio
+        """
         spect = self.upsample(spect)
         assert(spect.size(2) >= audio.size(1))
         if spect.size(2) > audio.size(1):
@@ -175,6 +176,7 @@ class WaveGlow(ExtendNNModule):
 
         spect = spect.unfold(2, self.n_group, self.n_group).permute(0, 2, 1, 3)
         spect = spect.contiguous().view(spect.size(0), spect.size(1), -1).permute(0, 2, 1)
+        """
 
         audio = audio.unfold(1, self.n_group, self.n_group).permute(0, 2, 1)
         output_audio = []
@@ -193,7 +195,8 @@ class WaveGlow(ExtendNNModule):
             audio_0 = audio[:,:n_half,:]
             audio_1 = audio[:,n_half:,:]
 
-            output = self.WN[k]((audio_0, spect))
+            #output = self.WN[k]((audio_0, spect))
+            output = self.WN[k]((audio_0))
             log_s = output[:, n_half:, :]
             b = output[:, :n_half, :]
             audio_1 = torch.exp(log_s)*audio_1 + b
@@ -204,23 +207,14 @@ class WaveGlow(ExtendNNModule):
         output_audio.append(audio)
         return torch.cat(output_audio,1), log_s_list, log_det_W_list
 
-    def infer(self, spect, sigma=1.0):
-        spect = self.upsample(spect)
+    def infer(self, audio_shape, sigma=1.0):
+
         # trim conv artifacts. maybe pad spec to kernel multiple
-        time_cutoff = self.upsample.kernel_size[0] - self.upsample.stride[0]
-        spect = spect[:, :, :-time_cutoff]
 
-        spect = spect.unfold(2, self.n_group, self.n_group).permute(0, 2, 1, 3)
-        spect = spect.contiguous().view(spect.size(0), spect.size(1), -1).permute(0, 2, 1)
 
-        if spect.type() == 'torch.cuda.HalfTensor':
-            audio = torch.cuda.HalfTensor(spect.size(0),
-                                          self.n_remaining_channels,
-                                          spect.size(2)).normal_()
-        else:
-            audio = torch.cuda.FloatTensor(spect.size(0),
-                                           self.n_remaining_channels,
-                                           spect.size(2)).normal_()
+        audio = torch.cuda.FloatTensor(audio_shape.size(0),
+                                       self.n_remaining_channels,
+                                       audio_shape.size(2)).normal_()
 
         audio = torch.autograd.Variable(sigma*audio)
 
@@ -229,7 +223,7 @@ class WaveGlow(ExtendNNModule):
             audio_0 = audio[:,:n_half,:]
             audio_1 = audio[:,n_half:,:]
 
-            output = self.WN[k]((audio_0, spect))
+            output = self.WN[k]((audio_0))
             s = output[:, n_half:, :]
             b = output[:, :n_half, :]
             audio_1 = (audio_1 - b)/torch.exp(s)
@@ -238,10 +232,7 @@ class WaveGlow(ExtendNNModule):
             audio = self.convinv[k](audio, reverse=True)
 
             if k % self.n_early_every == 0 and k > 0:
-                if spect.type() == 'torch.cuda.HalfTensor':
-                    z = torch.cuda.HalfTensor(spect.size(0), self.n_early_size, spect.size(2)).normal_()
-                else:
-                    z = torch.cuda.FloatTensor(spect.size(0), self.n_early_size, spect.size(2)).normal_()
+                z = torch.cuda.FloatTensor(audio_shape.size(0), self.n_early_size, audio_shape.size(2)).normal_()
                 audio = torch.cat((sigma*z, audio),1)
 
         audio = audio.permute(0,2,1).contiguous().view(audio.size(0), -1).data
