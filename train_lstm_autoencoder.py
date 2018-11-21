@@ -117,7 +117,7 @@ if __name__ == '__main__':
     import numpy as np
     cfg.model = 'lstmae'
     assert cfg.model in ['lstmae', 'waveglow']
-    cfg.seed = 0
+    cfg.seed = 6667834
     main()
     for i in range(100):
         random_seed = np.random.random_integers(0, 9999999999)
