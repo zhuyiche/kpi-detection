@@ -602,7 +602,7 @@ class ExtendNNModule(nn.Module):
         else:
             print('Warning! Model are trained from scratch! ')
 
-    def _load_data(self, dataloader, batch_size, workers, shuffle=True, pin_memory=True, **kwargs):
+    def _load_data(self, dataloader, batch_size, workers, if_test=True, shuffle=True, pin_memory=True, **kwargs):
         """
         Load data using DataLoader. Training, validation and test should all be included.
         Args:
@@ -622,10 +622,13 @@ class ExtendNNModule(nn.Module):
         val_loader = DataLoader(dataloader(datatype='valid', **kwargs),
                                 batch_size=batch_size, shuffle=shuffle, pin_memory=pin_memory,
                                 num_workers=workers)
-        test_loader = DataLoader(dataloader(datatype='test', **kwargs),
-                                 batch_size=batch_size, shuffle=shuffle, pin_memory=pin_memory,
-                                 num_workers=workers)
-        return train_loader, val_loader, test_loader
+        if if_test:
+            test_loader = DataLoader(dataloader(datatype='test', **kwargs),
+                                     batch_size=batch_size, shuffle=shuffle, pin_memory=pin_memory,
+                                     num_workers=workers)
+            return train_loader, val_loader, test_loader
+        else:
+            return train_loader, val_loader
 
     ########## Following are setter and getter for necessary instances. ############
     def set_criterion(self, criterion):

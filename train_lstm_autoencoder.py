@@ -84,13 +84,13 @@ def main():
             torch.cuda.manual_seed(cfg.seed)
 
         print('Waveglow Start Loading Data')
-        train_loader, val_loader, test_loader = waveglow_model._load_data(SingleWindowUnsupervisedKPIDataLoader,
-                                                                        cfg.batch_size, 1,
+        train_loader, val_loader = waveglow_model._load_data(SingleWindowUnsupervisedKPIDataLoader,
+                                                                        cfg.batch_size, 1, False,
                                                                         True, True,
                                                                         train_datapath=os.path.join(MAIN_PATH, 'data',
                                                                                                     'train'),
                                                                         test_datapath=os.path.join(MAIN_PATH, 'data',
-                                                                                                   'train'),
+                                                                                                   'test'),
                                                                         window_size=cfg.window_size, window_gap=1)
         # _mnist_dataload(args.pretrain_mnist_normal,args.pretrain_mnist_outlier,args.pretrain_batch_size,args.workers)
         print('Waveglow Finish Loading Data')
