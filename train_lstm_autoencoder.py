@@ -90,7 +90,7 @@ def main():
                                                                         train_datapath=os.path.join(MAIN_PATH, 'data',
                                                                                                     'train'),
                                                                         test_datapath=os.path.join(MAIN_PATH, 'data',
-                                                                                                   'test'),
+                                                                                                   'train'),
                                                                         window_size=cfg.window_size, window_gap=1)
         # _mnist_dataload(args.pretrain_mnist_normal,args.pretrain_mnist_outlier,args.pretrain_batch_size,args.workers)
         print('Waveglow Finish Loading Data')
