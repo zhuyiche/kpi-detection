@@ -226,7 +226,7 @@ class NN(object):
                                       'best_val_acc': best_val_acc,
                                       'optimizer': self._optimizer.state_dict(), }, is_best,
                                      self.train_checkpoint_save, self.train_model_save)
-                info['best_val_{}'.format(self.print_metric_name)]= self.model._best_valid_score
+                info['best_val_{}'.format(self.print_metric_name)]= self._best_valid_score
 
             elif self.if_checkpoint_save and self.test_loader is not None:
                 is_best = self._valid_score.avg > best_val_acc
@@ -323,10 +323,10 @@ class NN(object):
             self._optimizer.step()
 
             time_end = time.time() - time_now
-            #if batch_idx % print_freq == 0 and self.print_result_epoch:
-            print('Training Round: {}, Time: {}'.format(batch_idx,
+            if batch_idx % print_freq == 0 and self.print_result_epoch:
+                print('Training Round: {}, Time: {}'.format(batch_idx,
                                                         np.round(time_end, 2)))
-            print('Training Loss: val:{} avg:{} {}: val:{} avg:{}'.format(losses.val,
+                print('Training Loss: val:{} avg:{} {}: val:{} avg:{}'.format(losses.val,
                                                                           losses.avg,
                                                                           self.print_metric_name,
                                                                           percent_acc.val, percent_acc.avg))
@@ -375,6 +375,12 @@ class NN(object):
                     acc = self.metrics(output, target)
                 else:
                     acc = self.metrics(output, target, scores)
+
+                # this is design particularly for sklear.metrics.roc_auc_score
+                # extreme value will occur when only one class presented in mini-batch
+                if acc == 0 or acc == 1:
+                    acc = percent_acc.avg
+
 
                 percent_acc.update(acc, data.size(0))
                 time_end = time.time() - time_now
@@ -463,6 +469,11 @@ class NN(object):
                     acc = self.metrics(output, target)
                 else:
                     acc = self.metrics(output, target, scores)
+
+                # this is design particularly for sklear.metrics.roc_auc_score
+                # extreme value will occur when only one class presented in mini-batch
+                if acc == 0 or acc == 1:
+                    acc = percent_acc.avg
 
                 percent_acc.update(acc, data.size(0))
                 time_end = time.time() - time_now
