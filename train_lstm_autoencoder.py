@@ -76,8 +76,8 @@ def main():
         prepare_lstm_ae_net.train()
     else:
         waveglow_logger_path = os.path.join(MAIN_PATH, 'log', 'waveglow')
-        waveglow_model = 1
-        #waveglow_model = WaveGlow()
+        WN_config = {'n_layers': 8, 'n_channels': 512, 'kernel_size': 3}
+        waveglow_model = WaveGlow(n_flows=12, n_group=8, n_early_every=4, n_early_size=2, WN_config=WN_config)
         if torch.cuda.is_available():
             print('Pretrain model is running on GPU')
             waveglow_model = waveglow_model.cuda()
@@ -103,7 +103,7 @@ def main():
                                      criterion=WaveGlowLoss(),
                                      lr_scheduler=WarmRestartLR,
                                      tensorboard_path=os.path.join(MAIN_PATH, 'tensorlog', 'waveglow'),
-                                     logger_path=waveglow_model)
+                                     logger_path=waveglow_logger_path)
 
         waveglow_net = PrepareWaveGlow().make_network(model=waveglow_model, train_loader=train_loader,
                                                                     val_loader=val_loader,  # test_loader=test_loader,
@@ -115,9 +115,9 @@ def main():
 
 if __name__ == '__main__':
     import numpy as np
-    cfg.model = 'lstmae'
+    cfg.model = 'waveglow'
     assert cfg.model in ['lstmae', 'waveglow']
-    cfg.seed = 6667834
+    cfg.seed = 1234
     main()
     for i in range(100):
         random_seed = np.random.random_integers(0, 9999999999)

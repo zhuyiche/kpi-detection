@@ -101,8 +101,9 @@ class PrepareWaveGlow(NNprepare):
         This function is flexible yet the input and output should follow the exact same procedure.
         """
         output = model(data)
-        loss = criterion(output, data)
-        scores = 0
+        loss = criterion(output)
+        scores = np.zeros(shape=output[0].shape[0])
+        scores =torch.Tensor(scores)
 
         return output, scores, loss
 

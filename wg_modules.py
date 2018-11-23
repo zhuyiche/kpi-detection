@@ -8,8 +8,8 @@ from torchsnippet import ExtendNNModule
 def fused_add_tanh_sigmoid_multiply(input_a, input_b, n_channels):
     n_channels_int = n_channels[0]
     in_act = input_a+input_b
-    t_act = torch.nn.functional.tanh(in_act[:, :n_channels_int, :])
-    s_act = torch.nn.functional.sigmoid(in_act[:, n_channels_int:, :])
+    t_act = torch.tanh(in_act[:, :n_channels_int, :])
+    s_act = torch.sigmoid(in_act[:, n_channels_int:, :])
     acts = t_act * s_act
     return acts
 
@@ -62,7 +62,7 @@ class WN(torch.nn.Module):
     from WaveNet is the convolutions need not to be causal.  There is also no dilation
     size reset.  The dilation only doubles on each layer
     """
-    def __init__(self, n_in_channels, n_mel_channels, n_layers, n_channels,
+    def __init__(self, n_in_channels,  n_layers, n_channels,
                  kernel_size):
         super(WN, self).__init__()
         assert(kernel_size % 2 == 1)
@@ -92,7 +92,8 @@ class WN(torch.nn.Module):
             in_layer = torch.nn.utils.weight_norm(in_layer, name='weight')
             self.in_layers.append(in_layer)
 
-            cond_layer = torch.nn.Conv1d(n_mel_channels, 2*n_channels, 1)
+            cond_layer = torch.nn.Conv1d(n_channels, 2 * n_channels, kernel_size,
+                                       dilation=dilation, padding=padding)
             cond_layer = torch.nn.utils.weight_norm(cond_layer, name='weight')
             self.cond_layers.append(cond_layer)
 
@@ -132,13 +133,10 @@ class WN(torch.nn.Module):
 
 
 class WaveGlow(ExtendNNModule):
-    def __init__(self, n_mel_channels, n_flows, n_group, n_early_every,
+    def __init__(self, n_flows, n_group, n_early_every,
                  n_early_size, WN_config):
         super(WaveGlow, self).__init__()
 
-        self.upsample = torch.nn.ConvTranspose1d(n_mel_channels,
-                                                 n_mel_channels,
-                                                 1024, stride=256)
         assert(n_group % 2 == 0)
         self.n_flows = n_flows
         self.n_group = n_group
@@ -157,7 +155,7 @@ class WaveGlow(ExtendNNModule):
                 n_half = n_half - int(self.n_early_size/2)
                 n_remaining_channels = n_remaining_channels - self.n_early_size
             self.convinv.append(Invertible1x1Conv(n_remaining_channels))
-            self.WN.append(WN(n_half, n_mel_channels*n_group, **WN_config))
+            self.WN.append(WN(n_half, **WN_config))
         self.n_remaining_channels = n_remaining_channels  # Useful during inference
 
     def forward(self, forward_input):
