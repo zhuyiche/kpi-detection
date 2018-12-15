@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.autograd import Variable
 import torch.nn.functional as F
-from torchsnippet import ExtendNNModule
+from src.torchsnippet import ExtendNNModule
 
 #@torch.jit.script
 def fused_add_tanh_sigmoid_multiply(input_a, input_b, n_channels):

@@ -1,0 +1,76 @@
+
+
+Intro:
+We discover that the .... encountered during training of ... is the central cause.
+
+We propose to address this .. by ... such that it ...
+
+To evaluated the effectiveness of our ..., we design and train ...
+
+Our results show that when trained with ..., .. is able to match the ... while surpassing the accuracy of all existing state-of-the-art.
+
+As popluarized in the ...,
+
+Despite the success of ..., a natural question to ask is: could a simple ... achieve similiar accuracy?
+Recent work on ..., such as ..., demonstrates promising results, yielding f... relative to ..
+
+This paper pushes the envelop further: we present a .. that, for the first time, matches the ...
+
+To achieve this result, we identify class imbalance during training as the main obstacle impeding ... from achieving state-of.and propose
+a new loss function that eliminates this barrier.
+
+In contrast, ... must process a ... across. In practice this ofter amounts to enumerating ... that ..
+
+While similar ... heuristics may alse be applied, they are inefficient as the training procedure is still dominated by ...
+
+This iefficiency is a classic problem in ... that is typically addressed via techniques such as ... or ..
+Intuitively, this scaling factor can automatically down-weight the contribution of easy examples during ... and rapidly focus the model on hard examples
+Experiments show that our proposed ... enables us to train a high-accuracy, ... that significantly outperforms the alternatives of training with the sampling heuristics or ,,..
+Finally, we note that the exact for ... is not crucial, we show other ....
+
+
+
+Related work:
+A representative work on ... is ....
+In xxx stage, xxx exloits ... to adaptively ...
+
+Problem Formulation
+A ... is defined as ... In this paper, we focus on ..
+More specifically, we aim to ... such that n
+
+
+
+Method:
+
+The .. is designed to address the ... scenario in which there is an extreme imbalance between  ... during training
+
+We introduce the focal loss starting from the ....
+
+The ... can be seen as the .. curce in figure 1. One notable property of this ... ,which can be easily seen in its plot, is than even examples
+that are easily classified incur a loss with non-trivial magnitude.
+
+A common method for addressing ... is to introduce a weighting factor .. for class ... In practice a may be set by inverse class frequency
+or treated as a hyperparameter to set by cross validation. For notational convenience, we define ... analogously to how we defined .. .
+
+Easily classified negatives comprise the majority of the loss and dominate the gradient.
+
+Intuitively, the modulating factor reduces the loss contritbuion from easy examples and extends ... in which an example receives low loss.
+#######  Use exmaple to fill more space and illstructe your idea.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

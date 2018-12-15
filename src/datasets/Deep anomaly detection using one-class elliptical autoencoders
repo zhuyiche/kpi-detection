@@ -1,0 +1,49 @@
+Deep anomaly detection using one-class elliptical auto-encoders
+
+
+We consider the problem of image anomaly detections, and present a new one-class autoencoder objective. We describe anomaly detection in
+image as detecting all images that does not belong to a "normal" class(plane). We show how to train a deep autoencoders that can detect
+novolty images(i.e. non-plane instances). The main idea behind our scheme is two folds. First, we project the data distribution into subspace,
+and force this subspace feature to form a elliptical-like feature space. Second, we adapt the idea of one-class classification, our objective
+is to find the minimum volume eplliptical covering feature space, and consider any samples outside this feature subspaces as out-of-distribution
+images. We present extensive experiments using proposed method, and demonstrate the effientiveness and robustness of our proposed method on
+simple image datasets(mnist) and complex image datasets(cifar10, fashion-mnist).
+
+
+
+Related work:
+
+One-class method in anomaly detection.
+(oc-svm, svdd, oc-rf)
+One-class svms first proposed by [L. Manevita, 2001] for document classfification,
+later being adapt for many other applications such as
+.., especially in anomaly detection. Assume there are training sample set $X = [x1, x2, ..., xl]$, where X is a compact subset of R^N,
+Let F: X - H be a feature mapping to another space. One can solve the following quadratic problem
+
+The idea of using an ellipsoid rather than a sphere has been mentioned in (Rjuan 1997), although it has not been popularized due to its
+high computational cost O(n^3.5).
+$$min$$
+
+Deep network in anomaly detection.
+Previous one-class classification method adapt neural network using a single encoder with minimizing the volume of hypersphere placing on the
+feature space. However, this method have servel problems. First, this method reqiure pretrain on the auto-encoder version of their neural
+network, and it is sensitive to the pretrain weights. As we have test on the code published by the author, the result present in their paper
+can only achieved if and only if the pretrain auc score reaches 90%. If the pretrain auc score gets higher or lower than 90%, it converges
+either to quick or to slow, making the one-class objective impossible to optimize. Second, the required feature space may not be a form of
+hypersphere, as a result, the optimal minimum hypersphere on feature space may become very large, so that fail to handle complex images
+dataset(in cifar10, some category have score lower than other machine learning algorithm such as kernel density estimiation and isolation
+forest). On the contrary, our proposed method have three advantages. First of all, we inhertly adopt the auto-encoder structure in to our
+one-class objective, avoid the delicacy of fine-tuning the pretrain model. Second, an elliptical is alway smaller than a hypersphere, achieving
+a optimial performance and without fine-tuning additional hyper parameters. More importantly, by projecting to subspace and putting constaints
+on the feature subspace, we are able to enforce the feature subspace to form a nice ellipitical like feautre space, making it easier to achieve
+the optimal performance and convenient fine-tuning.
+
+
+Method:
+minium volume covering ellipsoid:
+
+
+
+
+
+

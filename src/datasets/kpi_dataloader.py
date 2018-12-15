@@ -1,16 +1,15 @@
 import numpy as np
-from preprocessing import standardize_kpi, complete_timestamp
-from sklearn.preprocessing import MinMaxScaler
+from kpi_preprocessing import standardize_kpi, complete_timestamp
 import pandas as pd
 import os
 from config import Configuration as cfg
-
+from torch.utils.data import Dataset
 ROOT_DIR = os.getcwd()
 if ROOT_DIR.endswith('datasets'):
     ROOT_DIR = os.path.dirname(os.path.dirname(ROOT_DIR))
 
 DATA_PATH = os.path.join(ROOT_DIR, 'data')
-from torch.utils.data import Dataset
+
 
 
 class SingleWindowUnsupervisedKPIDataLoader(Dataset):
@@ -49,14 +48,13 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
             self.total_test_datasets, self.total_test_event_labels = [], []
 
             if self.datatype == 'train' or self.datatype == 'valid':
-                train_datasets, train_event_labels, valid_datasets, valid_event_labels = self.process_data(
-                    train_datasets_list=self.total_train_datasets,
-                    train_event_labels_list=self.total_train_event_labels,
-                    valid_datasets_list=self.total_valid_datasets,
-                    valid_event_labels_list=self.total_valid_event_labels)
+                    self.process_data(train_datasets_list=self.total_train_datasets,
+                                    train_event_labels_list=self.total_train_event_labels,
+                                    valid_datasets_list=self.total_valid_datasets,
+                                    valid_event_labels_list=self.total_valid_event_labels)
             else:
-                test_datasets, test_event_labels = self.process_data(test_datasets_list=self.total_test_datasets,
-                                                                     test_event_labels_list=self.total_test_event_labels)
+                self.process_data(test_datasets_list=self.total_test_datasets,
+                                  test_event_labels_list=self.total_test_event_labels)
 
         else:
             print('concat multiple csv files')
@@ -82,16 +80,15 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
                 self._assert_unique_timestamp(self.timestamp)
 
                 if self.datatype == 'train' or self.datatype == 'valid':
-                    self.total_train_datasets, self.total_train_event_labels, \
-                    self.total_valid_datasets, self.total_valid_event_labels = self.process_data(
-                        train_datasets_list=self.total_train_datasets, train_event_labels_list=self.total_train_event_labels,
-                        valid_datasets_list=self.total_valid_datasets, valid_event_labels_list=self.total_valid_event_labels)
+                    self.process_data(
+                    train_datasets_list=self.total_train_datasets, train_event_labels_list=self.total_train_event_labels,
+                    valid_datasets_list=self.total_valid_datasets, valid_event_labels_list=self.total_valid_event_labels)
 
 
                 else:
-                    self.total_test_datasets, self.total_test_event_labels = self.process_data(
-                        test_datasets_list=self.total_test_datasets,
-                        test_event_labels_list=self.total_test_event_labels)
+                    self.process_data(test_datasets_list=self.total_test_datasets,
+                                      test_event_labels_list=self.total_test_event_labels)
+
 
             self.total_train_datasets = np.array(self.total_train_datasets)
             self.total_valid_datasets = np.array(self.total_valid_datasets)
@@ -117,9 +114,6 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
             #_data = pd.concat(total_data_files
         #timestamp, missing, (values, labels) = complete_timestamp(timestamp, (values, labels))
 
-
-
-
     def __len__(self):
         if self.datatype == 'train':
             return self.total_train_datasets.shape[0]
@@ -127,7 +121,6 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
             return self.total_valid_datasets.shape[0]
         else:
             return self.total_test_datasets.shape[0]
-
 
     def __getitem__(self, index):
         if self.datatype == 'train':
@@ -147,8 +140,6 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
     def process_data(self, train_datasets_list=None, train_event_labels_list=None,
                      valid_datasets_list=None, valid_event_labels_list=None,
                      test_datasets_list=None, test_event_labels_list=None):
-        #values = np.asarray(self.values, dtype=np.float32)
-        #labels = np.asarray(self.labels, dtype=np.int32)
         values = self.values
         labels = self.labels
         if len(values.shape) != 1:
@@ -166,27 +157,26 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
             total_train_step, total_valid_step = int(train_size // self.window_size) + 1, \
                                                  int(valid_size // self.window_size) + 1
 
-            train_datasets, train_event_labels = self._window_data_process(total_step=total_train_step,
-                                                                         values=train_values,
-                                                                         labels=train_labels,
-                                                                        datasets=train_datasets_list,
-                                                                           event_labels=train_event_labels_list)
-            valid_datasets, valid_event_labels = self._window_data_process(total_step=total_valid_step,
-                                                                           values=valid_values,
-                                                                           labels=valid_labels,
-                                                                           datasets=valid_datasets_list,
-                                                                           event_labels=valid_event_labels_list)
-            return train_datasets, train_event_labels, valid_datasets, valid_event_labels
+            self._window_data_process(total_step=total_train_step,
+                                     values=train_values,
+                                     labels=train_labels,
+                                    datasets=train_datasets_list,
+                                       event_labels=train_event_labels_list)
+            self._window_data_process(total_step=total_valid_step,
+                                   values=valid_values,
+                                   labels=valid_labels,
+                                   datasets=valid_datasets_list,
+                                   event_labels=valid_event_labels_list)
+
         else:   ## else would be test datasets.
             test_size = len(values)
             total_test_step = int(test_size // self.window_size) + 1
-            test_datasets, test_event_labels = self._window_data_process(total_step=total_test_step,
-                                                                         values=values,
-                                                                         labels=labels,
-                                                                         datasets=test_datasets_list,
-                                                                         event_labels=test_event_labels_list
-                                                                         )
-            return test_datasets, test_event_labels
+            self._window_data_process(total_step=total_test_step,
+                                     values=values,
+                                     labels=labels,
+                                     datasets=test_datasets_list,
+                                     event_labels=test_event_labels_list
+                                     )
 
     def _assert_unique_timestamp(self, df):
         """
@@ -229,10 +219,6 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
             datasets.append(step_value)
             start_point += self.window_gap
 
-        if labels is not None:
-            return datasets, event_labels
-        else:
-            return datasets
 
     def load_kpi_csv(self, csv_path):
         """

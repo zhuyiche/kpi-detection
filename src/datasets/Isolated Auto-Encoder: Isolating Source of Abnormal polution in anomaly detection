@@ -1,0 +1,99 @@
+Isolated Auto-Encoder: Isolating Source of Abnormal Polution in Anomaly Detection.
+
+Abstract: Despite many years research in understanding the normal and abnormal pattern in many application such as ops, ...,
+it is still a challenage problem. As most anomaly detection generative method approach require to use normal data during the
+training phase, which is impractical in reality, we propose a unified anomaly detection auto-encoder framework Isolated Auto-encoder,
+that identified anomaly instances with using a thought cared training dataset. We demonstrate that our proposed method robust to
+anomaly polltuion and can generalize to unseen data. Extensive experiments on several real datasets demonstrate our consistent performance
+of proposed method.
+
+
+
+
+Related Work:
+
+Machine Learning in Anomaly Detection.
+
+
+Generative Model in Anomaly Detection.
+On approach to reslove the problem in anomaly detection is to use Generative Neural Network. The intuition of using such network is
+simple: if we are able to learn the normal feature pattern from the data, then we can easily detect anomaly instances from data feature
+representations if its feature represenatation are far away from the normal instances. Representing by generative neural network is,
+we using such model to learn the features from normal data, we often adopted reconstruction error to serve such propose. In our assumption,
+normal data can be reconstructed by our generative network yet anomalous instance will fail to be generate. Many approaches based on such
+method are used in anomaly detection[].
+Deep autoencoders are one of the most popular. Previous effort on Variational Auto-encoder[], LSTM auto-encoder[], Hybrid auto-encoder with
+mixture model[]. All these method inherit the nonlinear representation capbility of autoencoder, as well as anomaly discrimination ability
+by reconstruction. However, one server problem exist in these method are, generative method learn the normal data feature representations.
+Typically only normal training data can be used, which are impossible in real world scaniro, where anomalies are mixed in normal data.
+Some attempts have been made using hypersphere learning to separte the anomaly data duiring training, yet there are four crucial hyper
+parameters in the model makes it hard to find optimal solution. Whereas in our proposed isolated auto-encoders, we do not require any prepossing
+in the training data. We can use mixture of normal and anomaly data in the training process, and during the online training, we incorprate
+isolation forest to detach the anomaly instances. And more importantly, our new method only have one extra hyper parameter needs to fine-tune,
+makes our method more robust.
+
+Problem Definition:
+
+Anomaly detection is defined as ...
+
+
+Method:
+In this section, we first introduce some preliminary knowledge whereas the next section will be devoted to describe our approch to
+learnable isolation tree and architectural innovations of Isolation Auto-encoders.
+
+
+Isolation Forest.
+Isolation Forest is first proposed by (Zhou etc 2007) as a model based anomaly detection methods that explicitly isolates
+anomalies instead of profiles normal points. Isolation Forest builds an ensemble of Isolation Tree, each tree used to
+"isolate" by randomly cutting in the sample data, and those instances have shorter average path are determined to be anomalies.
+Some paper further extend the method of isolation forest in the area of application of anomaly detection, feedback, ..
+The the formal isolation forest paper, the author proposed a way to transform the path length to anomaly score. The formal definition of
+path length is, for and point x, we denote the path length as h(x), it is measure by the number of edges x transver an isolation tree
+from the root to the external node.
+Suppose there are n instances in current datas, the average path length of unsuccessfual search in the binary search tree is defined as:
+$$ c(n) = 2H(n-1) - (2(n-1) / n)$$
+where H(i) is the harmonic number and usually estimated by ln(i) + Euler's constant.
+The anomaly score in isolation tree is defined as:
+$$ s(x, n) = 2**(-E(h(x)) / c(n))$$
+where E(h(x)) is the average of h(x) from a collection of isolation trees. And if E(h(x)) close to 1, it is definitely a anomaly datapoint,
+if E(h(x)) is close to 0, we are confindent to say this is a normal point. If E(h(x)) is close to 0.5, we then the sample does not really be
+a normal sample or anomaly sample.
+
+The isolation forest is based on the idea of only small fraction of anomaly datapoints are contains in the training dataset. To satisfiy this
+requirement, for each isolation tree use sub-sampling size of 256 to train, and then perform an ensemble to form a isolation forest.
+
+We adapt the idea of isolation forest, and propose a learnable average isolation forest with the following changes:
+
+It is intuitive to apply the sub-sampling size of 256 to train each isolation tree. Therefore, unless otherwise specified, we use batch_size of
+256 to train deep auto-encoder, such that for each 256 sample point a isolation tree can be built based on that. However, because the weighted
+reconstruction loss for each step are built based on the result of isolation tree, it is quite unstable if only one isolation tree are used
+to produce the result, because this algorithm are randomly isolated during training. We simple form a t number of isolation tree, we use t=20
+in this setting, and each isolation tree form upon all 256 batch size samples, then simplly taking the average result of t isolation tree as
+our isolation forest. Then we are able to give a anomaly score for each sample point, where we consider this anomaly score as a weights to put
+into the reconstrution error. The complexity of training an Average isolaition forest is O(t* batch_size * log(batch_size)), whereas in pratice
+we set t = 20 and batch_size = 256, give us a trivial running time comparing to training a LSTM auto-encoder.
+In pratice, we set the weights of instances who have anomaly score from average isolation tree higher than 0.7 be 0, and lower than 0.3 be 1,
+keep instances who obtain the anomaly score bewteen 0.3 to 0.7 keep its probability as weights.
+
+Comparing to the previous method using hypersphere learning to deal with the problem of data pulloution, using isolation is both computational
+effient and hyper parameter free, where under the hypersphere learning setting, there are four curcial addition hyper parameters needs to
+fine-tune, as well as it takes longer to train the neural network.
+
+
+####### To do !!! show that, use mnist dataset, with a plot, use normal auto-encoder structure if the anomaly point become larger, the accuracy
+####### become lower
+
+LSTM auto-encoders. Deep auto-encoders usually contains two parts: an encoder and an decoder, to extract feature representation
+from the high dimensional data. One of the advantage of using auto-encoders is it sucessfully prevent the curse of dimensionality[],
+a typical phenomenoal exists when doing feature represenataion exraction in high dimensional data. In machine learning, dimensional
+reduction algorithm such as PCA[] are often used to prevent such feature damage. However, as described by [], anomaly instances often
+obtains some rare feature that will be loss if using such dimensional reduction alorigthm.
+
+
+The proposed Isolatied Auto-Encoders
+Motivation. To resolve the problem that exist in almost all generative
+
+
+Inference:
+During the inference, we pass our data into the model without passing the adapative isolation trees part. For any instance that have
+a construction error higher than x, we consider this sample as a anomaly, otherwise it is a normal data.
