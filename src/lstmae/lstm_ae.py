@@ -1,9 +1,5 @@
 import torch.nn as nn
-import torchvision
-import torch
-from torchsnippet import ExtendNNModule
-import torch.nn.functional as F
-import numpy as np
+from src.torchsnippet import ExtendNNModule
 
 __all__ = ['LSTMAutoEncoder']
 
@@ -18,6 +14,12 @@ class EncoderLSTM(nn.Module):
                              num_layers=window_size, batch_first=True, bidirectional=bidirectional)
         self.relu2 = nn.ReLU()
 
+        self.linear1 = nn.Linear(hidden_size[1], hidden_size[2])
+        self.relu3 = nn.ReLU()
+        self.linear2 = nn.Linear(hidden_size[2], hidden_size[3])
+        self.relu4 = nn.ReLU()
+
+
     def forward(self, input):
         #print('input shape  ', input.shape)
         input = input.view(input.shape[0], input.shape[1], 1)
@@ -26,6 +28,13 @@ class EncoderLSTM(nn.Module):
         encoded_input = self.relu1(encoded_input)
         encoded_input, _ = self.lstm2(encoded_input)
         encoded_input = self.relu2(encoded_input)
+        print("last lstm encoder layer shape : ", encoded_input.shape)
+
+        #encoded_linear = encoded_input.view(encoded_input.size(0), -1)
+        #encoded_linear = self.linear1(encoded_linear)
+        #encoded_linear = self.relu3(encoded_linear)
+        #encoded_linear = self.linear2(encoded_linear)
+        #encoded_linear = self.relu34(encoded_linear)
         return encoded_input
 
 
@@ -43,11 +52,8 @@ class DecoderLSTM(nn.Module):
     def forward(self, input):
         decoded_output, _ = self.lstm1(input)
         decoded_output = self.relu1(decoded_output)
-        #print('self.decode.shape after relu ', decoded_output.shape)
         decoded_output, _ = self.lstm2(decoded_output)
-        #print('self.decode_lstm2.shape ', decoded_output.shape)
         decoded_output = self.relu2(decoded_output)
-        #print('self.decode_lstm2 after relu.shape ', decoded_output.shape)
         decoded_output = decoded_output.view(decoded_output.shape[0], decoded_output.shape[1])
         return decoded_output
 
@@ -61,6 +67,5 @@ class LSTMAutoEncoder(ExtendNNModule):
 
     def forward(self, input):
         encoded_input = self.encoder(input)
-        #print('self.encoder.shape ', encoded_input.shape)
         decoded_output = self.decoder(encoded_input)
         return decoded_output

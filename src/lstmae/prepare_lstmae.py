@@ -100,10 +100,10 @@ class PrepareWaveGlow(NNprepare):
         """
         This function is flexible yet the input and output should follow the exact same procedure.
         """
+        # this is forward step to calculate loss
         output = model(data)
-        loss = criterion(output)
-        scores = np.zeros(shape=output[0].shape[0])
-        scores =torch.Tensor(scores)
+        loss = criterion(output, data)
+        scores = 0
 
         return output, scores, loss
 

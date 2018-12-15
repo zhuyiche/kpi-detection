@@ -1,11 +1,9 @@
 import torch
-import time
 import numpy as np
 import os, shutil
 import torch.nn as nn
-import sklearn, threading
-from config import Configuration as cfg
-from logger import Logger
+import threading
+from src.logger import Logger
 import time
 
 

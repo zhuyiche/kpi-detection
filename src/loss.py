@@ -31,3 +31,23 @@ class WaveGlowLoss(torch.nn.Module):
 
         loss = torch.sum(z*z)/(2*self.sigma*self.sigma) - log_s_total - log_det_W_total
         return loss/(z.size(0)*z.size(1)*z.size(2))
+
+
+class IsolateLoss(nn.Module):
+    def __init__(self):
+        super(IsolateLoss, self).__init__()
+
+    def forward(self, input, output, probability_weights):
+        ###
+        # Ideally we g
+        residual = input - output
+        loss = probability_weights * torch.pow(residual, 2)
+        return loss
+
+
+class SphereLoss(nn.Module):
+    def __init__(self):
+        super(SphereLoss ,self).__init__()
+
+    def forward(self, *input):
+        return None

@@ -1,19 +1,16 @@
-import argparse, os
+import os
 import torch
 from config import Configuration as cfg
-from torch.utils.data import DataLoader
 from kpi_dataloader import SingleWindowUnsupervisedKPIDataLoader
-from prepare import PrepareLSTMAutoEncoder, PrepareWaveGlow
-from lstm_ae import LSTMAutoEncoder
+from src.lstmae.prepare_lstmae import PrepareLSTMAutoEncoder, PrepareWaveGlow
+from src.lstmae.lstm_ae import LSTMAutoEncoder
 import torch.backends.cudnn as cudnn
 from skorch.callbacks.lr_scheduler import WarmRestartLR
-import sys
 from torch.optim import SGD, Adam
-from loss import SquareErrorLoss
-import parser
+from src.loss import SquareErrorLoss
 
-from wg_modules import WaveGlow
-from loss import WaveGlowLoss
+from src.waveglow.wg_modules import WaveGlow
+from src.loss import WaveGlowLoss
 
 
 MAIN_PATH = os.getcwd()
