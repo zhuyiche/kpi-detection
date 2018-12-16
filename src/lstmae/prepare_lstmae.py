@@ -61,7 +61,7 @@ class PrepareLSTMAutoEncoder(NNprepare):
         scores[scores <= cfg.ano_thresh] = 0
         scores[scores > cfg.ano_thresh] = 1
         #print(scores)
-        print(target[target == 1.0])
+        #print(target[target == 1.0])
         return output, scores, loss
 
     def _create_save_file_name(self):
