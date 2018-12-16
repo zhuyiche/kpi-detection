@@ -17,9 +17,10 @@ class Configuration(object):
     parser.add_argument("--optim", type=str, default='sgd')
     parser.add_argument("--lr", type=float, default=0.01)
     parser.add_argument("--momentum", type=float, default=0.9)
-    parser.add_argument("--batch_size", type=int, default=200)
+    parser.add_argument("--batch_size", type=int, default=30)
     parser.add_argument("--epochs", type=int, default=250)
     parser.add_argument("--dropout_rate", type=float, default=0.5)
+    parser.add_argument("--ano_thresh", type=float, default=4.0)
     ### dataset setting #####
     parser.add_argument("--window_size", type=int, default=120)
 
@@ -50,3 +51,4 @@ class Configuration(object):
     mode = args.mode
     have_label = bool(args.have_label)
     dropout_rate = args.dropout_rate
+    ano_thresh = args.ano_thresh

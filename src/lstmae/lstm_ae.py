@@ -7,7 +7,7 @@ class EncoderLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, window_size, dropout_rate, bidirectional):
         super(EncoderLSTM, self).__init__()
 
-        self.lstm1 = nn.LSTM(input_size=input_size, hidden_size=hidden_size[0],
+        self.lstm1 = nn.LSTM(input_size=input_size, hidden_size=hidden_size[1],
                              num_layers=window_size, batch_first=True, bidirectional=bidirectional)
         self.dropout1 = nn.Dropout(dropout_rate)
         self.lstm2 = nn.LSTM(input_size=hidden_size[0], hidden_size=hidden_size[1],
@@ -18,14 +18,14 @@ class EncoderLSTM(nn.Module):
 
 
     def forward(self, input):
-        print('input shape  ', input.shape)
+        #print('input shape  ', input.shape)
         input = input.view(input.shape[0], input.shape[1], 1)
-        print('input shape  ', input.shape)
+        #print('input shape  ', input.shape)
         encoded_input, _ = self.lstm1(input)
         encoded_input = self.dropout1(encoded_input)
-        encoded_input, _ = self.lstm2(encoded_input)
-        encoded_input = self.dropout2(encoded_input)
-        print("last lstm encoder layer shape : ", encoded_input.shape)
+        #encoded_input, _ = self.lstm2(encoded_input)
+        #encoded_input = self.dropout2(encoded_input)
+        #print("last lstm encoder layer shape : ", encoded_input.shape)
         return encoded_input
 
 
@@ -44,7 +44,7 @@ class DecoderLSTM(nn.Module):
         decoded_output = self.dropout1(decoded_output)
         #decoded_output, _ = self.lstm2(decoded_output)
         decoded_output = self.linear(decoded_output)
-        print("decoded_output_linear.shape: ", decoded_output.shape)
+        #print("decoded_output_linear.shape: ", decoded_output.shape)
         decoded_output = decoded_output.view(decoded_output.shape[0], decoded_output.shape[1])
         return decoded_output
 
