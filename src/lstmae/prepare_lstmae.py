@@ -43,7 +43,7 @@ class PrepareLSTMAutoEncoder(NNprepare):
             self.save_file_name = save_file_name
 
     def _metrics(self, output, target, scores):
-        return _f1_score(output, target, scores)
+        return _accurcay_score(output, target, scores)
 
     def _score_function(self, data=None, target=None, criterion=None, model=None):
         """
@@ -61,7 +61,7 @@ class PrepareLSTMAutoEncoder(NNprepare):
         scores[scores <= cfg.ano_thresh] = 0
         scores[scores > cfg.ano_thresh] = 1
         #print(scores)
-        #print(scores[scores == 1])
+        print(target[target == 1.0])
         return output, scores, loss
 
     def _create_save_file_name(self):

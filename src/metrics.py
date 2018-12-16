@@ -23,6 +23,22 @@ def _accurcay_score(output, target, scores):
         # print('Warning: Only one class present in this Time')
         return np.float32(1.0)
 
+def _precision(output, target, scores):
+    scores = scores.detach().numpy()
+    print('reach there')
+    try:
+        tp = target
+        precision = precision_score(target, scores)
+        recall = recall_score(target, scores)
+        print('precision: {}, recall: {}'.format(precision, recall))
+        score = 2 * (precision * recall) / (precision + recall)
+        # score = f1_score(target, scores)
+        # print(score)
+        return score
+    except:
+        raise ValueError('Warning: Only one class present in this Time')
+
+
 def _f1_score(output, target, scores):
     scores = scores.detach().numpy()
     print('reach there')
