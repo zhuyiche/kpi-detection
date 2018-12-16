@@ -35,5 +35,6 @@ def _f1_score(output, target, scores):
         # print(score)
         return score
     except:
-        # print('Warning: Only one class present in this Time')
+
+        print('Warning: Only one class present in this Time')
         return np.float32(1.0)
