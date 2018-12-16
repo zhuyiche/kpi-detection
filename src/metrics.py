@@ -25,6 +25,7 @@ def _accurcay_score(output, target, scores):
 
 def _f1_score(output, target, scores):
     scores = scores.detach().numpy()
+    print('reach there')
     try:
         precision = precision_score(target, scores)
         recall = recall_score(target, scores)
