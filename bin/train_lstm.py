@@ -2,7 +2,7 @@ import os
 import torch
 from config import Configuration as cfg
 from src.datasets.kpi_dataloader import SingleWindowUnsupervisedKPIDataLoader
-from src.lstmae.prepare_lstmae import PrepareLSTMAutoEncoder, PrepareWaveGlow
+from src.lstmae.prepare_lstmae import PrepareLSTMAutoEncoder
 from src.lstmae.lstm_ae import LSTMAutoEncoder
 import torch.backends.cudnn as cudnn
 from skorch.callbacks.lr_scheduler import WarmRestartLR
@@ -13,7 +13,7 @@ from src.waveglow.wg_modules import WaveGlow
 from src.loss import WaveGlowLoss
 
 
-MAIN_PATH = os.getcwd()
+MAIN_PATH = os.path.dirname(os.getcwd())
 LOG_PATH = os.path.join(MAIN_PATH, 'log')
 
 
@@ -36,7 +36,8 @@ def main():
     lstm_ae_logger_path = os.path.join(MAIN_PATH, 'log', 'lstm_ae')
 
     lstmae_model = LSTMAutoEncoder(input_size=1, hidden_size=cfg.hidden_size,
-                                   window_size=cfg.window_size, bidirectional=cfg.bidirection)
+                                   window_size=cfg.window_size,
+                                   dropout_rate=cfg.dropout_rate, bidirectional=cfg.bidirection)
     if torch.cuda.is_available():
         print('LSTM_Auto_encoder model is running on GPU')
         lstmae_model = lstmae_model.cuda()
@@ -46,8 +47,8 @@ def main():
     train_loader, val_loader, test_loader = lstmae_model._load_data(SingleWindowUnsupervisedKPIDataLoader,
                                        cfg.batch_size, 1,
                                        True, True,
-                                       train_datapath=os.path.join(MAIN_PATH, 'data', 'train'),
-                                        test_datapath=os.path.join(MAIN_PATH, 'data', 'test'),
+                                       train_datapath=os.path.join(MAIN_PATH, 'data','kpi', 'train'),
+                                        test_datapath=os.path.join(MAIN_PATH, 'data','kpi', 'test'),
                                         window_size=cfg.window_size, window_gap=1)
         # _mnist_dataload(args.pretrain_mnist_normal,args.pretrain_mnist_outlier,args.pretrain_batch_size,args.workers)
     print('LSTM_Auto_encoder Finish Loading Data')
