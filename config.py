@@ -46,7 +46,7 @@ class Configuration(object):
     window_size = args.window_size
 
     bidirection = bool(args.bidirection)
-    hidden_size = [32, 128]
+    hidden_size = [64, 128]
     seed = 0
     mode = args.mode
     have_label = bool(args.have_label)

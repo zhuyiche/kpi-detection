@@ -23,8 +23,8 @@ class EncoderLSTM(nn.Module):
         #print('input shape  ', input.shape)
         encoded_input, _ = self.lstm1(input)
         encoded_input = self.dropout1(encoded_input)
-        #encoded_input, _ = self.lstm2(encoded_input)
-        #encoded_input = self.dropout2(encoded_input)
+        encoded_input, _ = self.lstm2(encoded_input)
+        encoded_input = self.dropout2(encoded_input)
         #print("last lstm encoder layer shape : ", encoded_input.shape)
         return encoded_input
 
