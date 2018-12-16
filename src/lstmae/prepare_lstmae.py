@@ -52,10 +52,11 @@ class PrepareLSTMAutoEncoder(NNprepare):
         output = model(data)
         ### reconstruction error
         sq_loss = criterion(output, data)
+        print('sq_loss.shape: ', sq_loss.shape)
         loss = torch.mean(sq_loss)
         #print('sq_loss ', sq_loss)
 
-        scores = torch.sum(sq_loss, dim=1)
+        scores = sq_loss
         #print(scores)
 
         return output, scores, loss
