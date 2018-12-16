@@ -2,7 +2,7 @@ from src.torchsnippet import NNprepare
 from config import Configuration as cfg
 from torch.nn.modules.loss import MSELoss, BCELoss
 import torch
-from src.metrics import _roc_auc_score
+from src.metrics import _f1_score, _accurcay_score
 
 
 def create_setting_pretraindcae(model=None):
@@ -43,7 +43,7 @@ class PrepareLSTMAutoEncoder(NNprepare):
             self.save_file_name = save_file_name
 
     def _metrics(self, output, target, scores):
-        return _roc_auc_score(output, target, scores)
+        return _f1_score(output, target, scores)
 
     def _score_function(self, data=None, target=None, criterion=None, model=None):
         """
@@ -61,7 +61,7 @@ class PrepareLSTMAutoEncoder(NNprepare):
         scores[scores <= cfg.ano_thresh] = 0
         scores[scores > cfg.ano_thresh] = 1
         #print(scores)
-        print(scores[scores == 1])
+        #print(scores[scores == 1])
         return output, scores, loss
 
     def _create_save_file_name(self):
