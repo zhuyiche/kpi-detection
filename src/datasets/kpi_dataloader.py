@@ -1,5 +1,5 @@
 import numpy as np
-from kpi_preprocessing import standardize_kpi, complete_timestamp
+from src.datasets.kpi_preprocessing import standardize_kpi, complete_timestamp
 import pandas as pd
 import os
 from config import Configuration as cfg
@@ -130,13 +130,13 @@ class SingleWindowUnsupervisedKPIDataLoader(Dataset):
             #print("train label shape !!!!!!!!!!!!!! ", np.array(self.total_train_event_labels).shape)
             #print(self.total_train_datasets)
             #print(self.total_train_event_labels)
-            total_datasets, total_event_labels = self.total_train_datasets, self.total_train_event_labels
+            total_datasets, total_point_labels = self.total_train_datasets, self.total_train_point_labels
         elif self.datatype == 'valid':
-            total_datasets, total_event_labels = self.total_valid_datasets, self.total_valid_event_labels
+            total_datasets, total_point_labels = self.total_valid_datasets, self.total_valid_point_labels
         else:
             #test_datasets, test_event_labels = self.process_data()
-            total_datasets, total_event_labels = self.total_test_datasets, self.total_test_event_labels
-        return total_datasets[index, ], total_event_labels[index,]
+            total_datasets, total_point_labels = self.total_test_datasets, self.total_test_point_labels
+        return total_datasets[index, ], total_point_labels[index,]
 
     def process_data(self, train_datasets_list=None, train_point_labels_list=None,
                      valid_datasets_list=None, valid_point_labels_list=None,

@@ -8,12 +8,10 @@ import torch.backends.cudnn as cudnn
 from skorch.callbacks.lr_scheduler import WarmRestartLR
 from torch.optim import SGD, Adam
 from src.loss import SquareErrorLoss
-
-from src.waveglow.wg_modules import WaveGlow
-from src.loss import WaveGlowLoss
+import sys
 
 
-MAIN_PATH = os.path.dirname(os.getcwd())
+MAIN_PATH = os.getcwd()
 LOG_PATH = os.path.join(MAIN_PATH, 'log')
 
 
@@ -72,13 +70,7 @@ def main():
 
 
 if __name__ == '__main__':
-    import numpy as np
-    cfg.model = 'waveglow'
-    assert cfg.model in ['lstmae', 'waveglow']
+    print(sys.path)
     cfg.seed = 1234
     main()
-    for i in range(100):
-        random_seed = np.random.random_integers(0, 9999999999)
-        cfg.seed = random_seed
-        main()
 

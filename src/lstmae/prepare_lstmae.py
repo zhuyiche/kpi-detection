@@ -58,7 +58,7 @@ class PrepareLSTMAutoEncoder(NNprepare):
 
         scores = sq_loss
         print(scores)
-        
+
         return output, scores, loss
 
     def _create_save_file_name(self):
