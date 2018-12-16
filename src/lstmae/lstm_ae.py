@@ -7,7 +7,7 @@ class EncoderLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, window_size, dropout_rate, bidirectional):
         super(EncoderLSTM, self).__init__()
 
-        self.lstm1 = nn.LSTM(input_size=input_size, hidden_size=hidden_size[1],
+        self.lstm1 = nn.LSTM(input_size=input_size, hidden_size=hidden_size[0],
                              num_layers=window_size, batch_first=True, bidirectional=bidirectional)
         self.dropout1 = nn.Dropout(dropout_rate)
         self.lstm2 = nn.LSTM(input_size=hidden_size[0], hidden_size=hidden_size[1],
