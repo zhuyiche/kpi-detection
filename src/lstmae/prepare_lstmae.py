@@ -57,6 +57,9 @@ class PrepareLSTMAutoEncoder(NNprepare):
         #print('sq_loss ', sq_loss)
 
         scores = sq_loss
+        #scores_ori = scores
+        scores[scores <= cfg.ano_thresh] = 0
+        scores[scores > cfg.ano_thresh] = 1
         print(scores)
 
         return output, scores, loss

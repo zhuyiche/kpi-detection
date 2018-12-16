@@ -20,7 +20,7 @@ class Configuration(object):
     parser.add_argument("--batch_size", type=int, default=30)
     parser.add_argument("--epochs", type=int, default=250)
     parser.add_argument("--dropout_rate", type=float, default=0.5)
-    parser.add_argument("--ano_thresh", type=float, default=4.0)
+    parser.add_argument("--ano_thresh", type=float, default=7.0)
     ### dataset setting #####
     parser.add_argument("--window_size", type=int, default=120)
 
